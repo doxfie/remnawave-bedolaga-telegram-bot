@@ -790,6 +790,7 @@ async def select_custom_criteria(callback: types.CallbackQuery, db_user: User, s
         'inactive_month': texts.t('ADMIN_MESSAGES_UI_SELECT_CUSTOM_CRITERIA_036', 'Неактивные 30+ дней'),
         'referrals': texts.t('ADMIN_MESSAGES_UI_SELECT_CUSTOM_CRITERIA_037', 'Пришедшие через рефералов'),
         'direct': texts.t('ADMIN_MESSAGES_UI_SELECT_CUSTOM_CRITERIA_038', 'Прямая регистрация'),
+        'admins': texts.t('ADMIN_MESSAGES_UI_SELECT_CUSTOM_CRITERIA_ADMINS', 'Только администраторы (тест)'),
     }
 
     user_count = await get_custom_users_count(db, criteria)
@@ -2179,6 +2180,13 @@ async def get_custom_users(db: AsyncSession, criteria: str) -> list:
         stmt = select(User).where(and_(User.status == 'active', User.referred_by_id.isnot(None)))
     elif criteria == 'direct':
         stmt = select(User).where(and_(User.status == 'active', User.referred_by_id.is_(None)))
+    elif criteria == 'admins':
+        # Тестовая отправка перед массовой: статус намеренно не фильтруем, иначе
+        # админ с неактивным аккаунтом не смог бы проверить рассылку на себе.
+        admin_ids = settings.get_admin_ids()
+        if not admin_ids:
+            return []
+        stmt = select(User).where(User.telegram_id.in_(admin_ids))
     else:
         return []
 

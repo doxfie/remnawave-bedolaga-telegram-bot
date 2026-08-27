@@ -1476,6 +1476,12 @@ def get_custom_criteria_keyboard(language: str = 'ru') -> InlineKeyboardMarkup:
                     text=_t(texts, 'ADMIN_CRITERIA_DIRECT', '🎯 Прямая регистрация'), callback_data='criteria_direct'
                 )
             ],
+            [
+                InlineKeyboardButton(
+                    text=_t(texts, 'ADMIN_CRITERIA_ADMINS', '🧪 Тест: только админам'),
+                    callback_data='criteria_admins',
+                )
+            ],
             [InlineKeyboardButton(text=texts.BACK, callback_data='admin_messages')],
         ]
     )
