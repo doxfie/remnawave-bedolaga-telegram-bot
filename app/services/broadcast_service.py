@@ -542,7 +542,12 @@ class BroadcastService:
         from app.config import settings
         from app.utils.rich_notify import try_send_rich_notification
 
-        if await try_send_rich_notification(
+        # У rich-сообщений нет параметра для превью ссылок: SendRichMessage его просто
+        # не принимает. Поэтому при включённом DISABLE_WEB_PAGE_PREVIEW рассылка уходит
+        # классикой — иначе настройка молча не работала бы на сообщениях со ссылками.
+        disable_preview = settings.DISABLE_WEB_PAGE_PREVIEW
+
+        if not disable_preview and await try_send_rich_notification(
             self._bot,
             telegram_id,
             config.message_text,
@@ -556,6 +561,7 @@ class BroadcastService:
             text=config.message_text,
             parse_mode='HTML',
             reply_markup=keyboard,
+            disable_web_page_preview=disable_preview,
         )
 
     async def _mark_finished(
