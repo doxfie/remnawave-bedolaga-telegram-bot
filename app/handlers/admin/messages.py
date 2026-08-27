@@ -1438,6 +1438,7 @@ async def confirm_broadcast(callback: types.CallbackQuery, db_user: User, state:
                                 text=message_text,
                                 parse_mode='HTML',
                                 reply_markup=broadcast_keyboard,
+                                disable_web_page_preview=settings.DISABLE_WEB_PAGE_PREVIEW,
                             )
                     else:
                         # Неизвестный media_type — отправляем как текст
@@ -1446,6 +1447,7 @@ async def confirm_broadcast(callback: types.CallbackQuery, db_user: User, state:
                             text=message_text,
                             parse_mode='HTML',
                             reply_markup=broadcast_keyboard,
+                            disable_web_page_preview=settings.DISABLE_WEB_PAGE_PREVIEW,
                         )
                 else:
                     await callback.bot.send_message(
@@ -1453,6 +1455,7 @@ async def confirm_broadcast(callback: types.CallbackQuery, db_user: User, state:
                         text=message_text,
                         parse_mode='HTML',
                         reply_markup=broadcast_keyboard,
+                        disable_web_page_preview=settings.DISABLE_WEB_PAGE_PREVIEW,
                     )
                 return 'sent'
 
