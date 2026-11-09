@@ -19,6 +19,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from aiogram.exceptions import TelegramBadRequest
 
+from app.config import settings
 from app.services.broadcast_service import BroadcastConfig, BroadcastMediaConfig, BroadcastService
 
 
@@ -114,5 +115,11 @@ async def test_plain_text_broadcast_is_not_limited_to_media_caption(monkeypatch,
     service._bot = AsyncMock()
     text = 'x' * length
     await service._deliver_message(42, BroadcastConfig(target='all', message_text=text, selected_buttons=[]), None)
-    service._bot.send_message.assert_awaited_once_with(chat_id=42, text=text, parse_mode='HTML', reply_markup=None)
+    service._bot.send_message.assert_awaited_once_with(
+        chat_id=42,
+        text=text,
+        parse_mode='HTML',
+        reply_markup=None,
+        disable_web_page_preview=settings.DISABLE_WEB_PAGE_PREVIEW,
+    )
     service._bot.send_photo.assert_not_awaited()
