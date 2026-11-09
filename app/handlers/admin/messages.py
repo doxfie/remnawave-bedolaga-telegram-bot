@@ -45,6 +45,7 @@ from app.services.pinned_message_service import (
 )
 from app.states import AdminStates
 from app.utils.decorators import admin_required, error_handler
+from app.utils.message_patch import caption_exceeds_telegram_limit
 from app.utils.miniapp_buttons import BUTTON_KEY_TO_CABINET_PATH, build_miniapp_or_callback_button
 from app.utils.timezone import format_local_datetime, local_day_start
 
@@ -1251,8 +1252,8 @@ async def confirm_button_selection(callback: types.CallbackQuery, db_user: User,
                 await callback.message.delete()
             except Exception:
                 pass
-            # Telegram ограничивает caption до 1024 символов
-            if len(preview_text) <= 1024:
+            # Telegram ограничивает caption до 1024 символов после разбора HTML (теги не считаются)
+            if not caption_exceeds_telegram_limit(preview_text):
                 await callback.bot.send_photo(
                     chat_id=callback.message.chat.id,
                     photo=media_file_id,
@@ -1418,8 +1419,8 @@ async def confirm_broadcast(callback: types.CallbackQuery, db_user: User, state:
                             'video': 'video',
                             'document': 'document',
                         }[media_type]
-                        # Telegram ограничивает caption до 1024 символов
-                        if len(message_text) <= 1024:
+                        # Telegram ограничивает caption до 1024 символов после разбора HTML (теги не считаются)
+                        if not caption_exceeds_telegram_limit(message_text):
                             await send_method(
                                 chat_id=telegram_id,
                                 **{media_kwarg: media_file_id},
